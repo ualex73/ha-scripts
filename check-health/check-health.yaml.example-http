@@ -1,0 +1,25 @@
+
+#interval: 60
+notify: telegram
+loglevel: INFO
+
+config:
+  - type: http
+    enabled: true
+    name: HA
+    host: https://hass.internal.nl
+    request: GET
+    code: 200
+
+  - type: http
+    enabled: true
+    name: PiHole2
+    host: http://pihole2.lan/admin
+    request: GET
+    code: 200
+
+telegram:
+  token: <token>
+  chat_id: <chatid>
+
+# End

@@ -1,0 +1,41 @@
+
+#interval: 60
+notify: telegram
+loglevel: INFO
+
+config:
+  - type: docker-host
+    enabled: false
+    name: HA
+    container: hass
+    host: 192.168.101.201
+    port: 8123 
+    dns: false
+    clients:
+      containers:
+        - appdaemon
+        - nodered 
+      hosts:
+        - 192.168.101.205
+
+  - type: docker-host
+    enabled: false
+    name: mosquitto
+    container: mosquitto
+    host: 192.168.101.201
+    port:
+     - 1883
+     - 8883
+    dns: false
+    clients:
+      containers:
+        - hass
+        - dsmr
+        - s0pcm
+        - nodered-rfxcom
+
+telegram:
+  token: <token>
+  chat_id: <chatid>
+  
+# End

@@ -1,0 +1,19 @@
+
+#interval: 60
+notify: telegram
+loglevel: INFO
+
+config:
+  - type: deconz
+    host: deconz.lan
+    port: 3080
+    apikey: <apikey>
+    timeout: 240
+    ignore:
+     - Living Front Curtain Remote
+
+telegram:
+  token: <token>
+  chat_id: <chatid>
+  
+# End
