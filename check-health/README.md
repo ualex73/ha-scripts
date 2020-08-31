@@ -11,7 +11,7 @@ This script can monitor connections inside Docker container(s), if the connectio
 ### Installation
 
 - Clone this git repository
-- Install the required dependencies with "pip3 install -r "check-health-requirements.txt"
+- Install the required dependencies with "pip3 install -r check-health-requirements.txt"
 - Select an example file and rename/copy it to "check-health.yaml"
 - Configure "check-health.yaml", setup the hostname, API key and telegram token/chatid
 - Setup of the telegram bot isn't documented, this is assumed you know how to do this (telegram is the only option to notify)
