@@ -18,13 +18,18 @@ This script can monitor connections inside Docker container(s), if the connectio
 
 ### Usage
 To run the script, execute it as "root" as follows:
-
 ```
 ./check-health.py
 ```
 
+It can be added to the "root" crontab entry as follows:
+```
+* * * * * /this-is-a-folder/check-health.py >>/this-is-a-folder/check-health.stdout 2>&1
+```
+
+
 ### Output
-The script creates a file called "check-health.data.yaml", where it keeps track of the current state. If the faulty state is persisent for 2 minutes, it will send out a telegram message. 
+The script creates a file called "check-health.data.yaml", where it keeps track of the current state. If the faulty state is persisent for 2 attempts, it will send out a telegram message. 
 
 ### Support
 
