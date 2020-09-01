@@ -7,6 +7,7 @@ This script can monitor connections inside Docker container(s), if the connectio
 ### Requirements
 - Pythone 3.6+
 - Ubuntu 18.04+ (should work on other Linux flavors, but untested and unsupported)
+- DeCONZ API 2.05.80
 
 ### Installation
 
