@@ -7,6 +7,7 @@ This script can list all devices with its values, rename devices, configure devi
 ### Requirements
 - Pythone 3.6+
 - Ubuntu 18.04+ (should work on other Linux flavors, but untested and unsupported)
+- DeCONZ API 2.05.80
 
 ### Installation
 
