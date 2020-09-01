@@ -13,7 +13,9 @@ This script can list all devices with its values, rename devices, configure devi
 - Clone this git repository
 - Configure "deconz.yaml", setup the hostname, port and API key
 
-### Usage list devices
+### Usage
+
+####  list devices
 To run the script, execute it as follows:
 
 ```
@@ -33,7 +35,7 @@ sensor  Xiaomi Door Window                       Cellar Door                    
 sensor  Xiaomi Temperature/Humidity (Square)     Kitchen Fridge Small           S24, S25, S26        True  2020-09-01T08:40:57 7.69C, 69.63%, 1018hPa
 ```
 
-### Usage rename device
+#### rename device
 To run the script, execute it as follows:
 
 ```
