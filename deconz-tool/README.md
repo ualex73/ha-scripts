@@ -14,7 +14,7 @@ This script can list all devices with its values, rename devices, configure devi
 - Configure "deconz.yaml", setup the hostname, port and API key
 
 ### Usage
-To run the script, execute it as "root" as follows:
+To run the script, execute it as follows:
 
 ```
 ./deconz.py list
