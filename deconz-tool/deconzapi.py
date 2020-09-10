@@ -5,12 +5,9 @@ The DeCONZ data structure is flawed, it stores everything under lights and senso
 Power sockets are partially in lights and sensors (confusing).
 """
 
-import datetime
 import json
 import logging
 import requests
-
-from dateutil.parser import parse as dateparse
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -584,7 +581,7 @@ class DeCONZAPI:
                                     else DECONZ_SENSOR_UNITS[name][2]
                                 )
                     else:
-                        LOGGER.warning("Unit '%s' is missing in sensor unit list", name)
+                        _LOGGER.warning("Unit '%s' is missing in sensor unit list", name)
                         # sentry[DECONZ_ATTR_VALUES][name] = str(value)
 
                     # Put the value also as raw, as is retrieved from API
