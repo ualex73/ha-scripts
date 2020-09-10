@@ -5,13 +5,9 @@ The DeCONZ data structure is flawed, it stores everything under lights and senso
 Power sockets are partially in lights and sensors (confusing).
 """
 
-import datetime
 import json
 import logging
 import requests
-import dateutil
-
-from dateutil.parser import parse as dateparse
 
 _LOGGER = logging.getLogger(__name__)
 
