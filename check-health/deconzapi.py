@@ -584,7 +584,7 @@ class DeCONZAPI:
                                     else DECONZ_SENSOR_UNITS[name][2]
                                 )
                     else:
-                        LOGGER.warning("Unit '%s' is missing in sensor unit list", name)
+                        _LOGGER.warning("Unit '%s' is missing in sensor unit list", name)
                         # sentry[DECONZ_ATTR_VALUES][name] = str(value)
 
                     # Put the value also as raw, as is retrieved from API
