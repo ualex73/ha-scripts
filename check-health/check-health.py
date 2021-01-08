@@ -74,6 +74,7 @@ CONF_LOGLEVEL = "loglevel"
 CONF_NAME = "name"
 CONF_NOTIFY = "notify"
 CONF_PORT = "port"
+CONF_PROXY = "proxy"
 CONF_REQUEST = "request"
 CONF_TELEGRAM = "telegram"
 CONF_TIMEOUT = "timeout"
@@ -141,6 +142,7 @@ HTTP_SCHEMA = BASE_SCHEMA.extend(
         ),
         vol.Optional(CONF_CODE, default=200): vol.All(),
         vol.Optional(CONF_TIMEOUT, default=5): int,
+        vol.Optional(CONF_PROXY, default=""): str,
     },
     extra=vol.ALLOW_EXTRA,
 )
@@ -554,7 +556,7 @@ class HealthCheck:
                         continue
 
                     # RC=0, should be good
-                    #if outp.count("\n") > 1:
+                    # if outp.count("\n") > 1:
                     #    LOGGER.error(
                     #        "%s: container %s returned more then 1 line '%s'",
                     #        ATTR_DOCKERHOST,
@@ -718,15 +720,25 @@ class HealthCheck:
             LOGGER.debug("%s: %s is not enabled", ATTR_HTTP, config[CONF_NAME])
             return
 
+        # Check proxy server option
+        proxies = {}
+        if config[CONF_PROXY]:
+            proxies = {"http": config[CONF_PROXY], "https": config[CONF_PROXY]}
+
         try:
             LOGGER.debug(
-                "%s: Checking URL (%s) %s",
+                "%s: Checking URL (%s) %s (Proxy: %s)",
                 ATTR_HTTP,
                 config[CONF_REQUEST],
                 config[CONF_HOST],
+                config[CONF_PROXY],
             )
+
             req = requests.request(
-                config[CONF_REQUEST], config[CONF_HOST], timeout=config[CONF_TIMEOUT]
+                config[CONF_REQUEST],
+                config[CONF_HOST],
+                timeout=config[CONF_TIMEOUT],
+                proxies=proxies,
             )
 
         # requests.exceptions.InvalidURL
@@ -744,7 +756,7 @@ class HealthCheck:
 
         # Check if code matches the allowed one/list
         if req.status_code != config[CONF_CODE]:
-            LOGGER.error("%s: Not allowed code=%d", ATTR_HOST, req.status_code)
+            LOGGER.error("%s: Not allowed code=%d", ATTR_HOSTS, req.status_code)
             # Raise alarm
             msg = "{} returned code=%d".format(config[CONF_HOST], req.status_code)
             self._handleMsg(
@@ -862,7 +874,7 @@ class HealthCheck:
 
             if delta > config[CONF_TIMEOUT]:
                 LOGGER.error(
-                    "%s: Device %d (%s:%s) last update is %d minute(s) ago (reachable=%s)",
+                    "%s: Device %s (%s:%s) last update is %d minute(s) ago (reachable=%s)",
                     ATTR_DECONZ,
                     dev[deconzapi.DECONZ_ATTR_NAME],
                     dev[deconzapi.DECONZ_CATEGORY],
