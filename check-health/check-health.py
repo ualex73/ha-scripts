@@ -75,6 +75,7 @@ CONF_NAME = "name"
 CONF_NOTIFY = "notify"
 CONF_PORT = "port"
 CONF_PROXY = "proxy"
+CONF_RESPONSE = "response"
 CONF_REQUEST = "request"
 CONF_TELEGRAM = "telegram"
 CONF_TIMEOUT = "timeout"
@@ -143,6 +144,7 @@ HTTP_SCHEMA = BASE_SCHEMA.extend(
         vol.Optional(CONF_CODE, default=200): vol.All(),
         vol.Optional(CONF_TIMEOUT, default=5): int,
         vol.Optional(CONF_PROXY, default=""): str,
+        vol.Optional(CONF_RESPONSE, default=False): bool,
     },
     extra=vol.ALLOW_EXTRA,
 )
@@ -290,7 +292,7 @@ class HealthCheck:
         if alarm == ATTR_CLEAR:
             if data[ATTR_COUNT] >= self._config[CONF_ALARMCOUNT]:
                 LOGGER.debug("Adding clear msg to the queue '%s'", msg)
-                self._msg.append(entry)
+                self._msg.append({ATTR_MSG: entry + msg})
                 # Record the time when this happened
                 data[ATTR_CLEAR] = datetime.datetime.now()
 
@@ -762,10 +764,25 @@ class HealthCheck:
             self._handleMsg(
                 ATTR_ALARM, ATTR_HTTP, "", config[CONF_NAME], config[CONF_HOST], msg
             )
+
+            # When debugging print the response
+            if self._config[CONF_LOGLEVEL] == DEBUG:
+                LOGGER.debug("%s: Response=%s", ATTR_HTTP, req.text)
+            elif config[CONF_RESPONSE]:
+                # Always report the response as info level
+                LOGGER.info("%s: Response=%s", ATTR_HTTP, req.text)
+
             return
 
         # No error, lets check the response code
         LOGGER.debug("%s: Allowed code=%d (OK)", ATTR_HTTP, req.status_code)
+
+        # When debugging print the response
+        if self._config[CONF_LOGLEVEL] == DEBUG:
+            LOGGER.debug("%s: Response=%s", ATTR_HTTP, req.text)
+        elif config[CONF_RESPONSE]:
+            # Always report the response as info level
+            LOGGER.info("%s: Response=%s", ATTR_HTTP, req.text)
 
         # Clear possible error with primary container
         msg = "Check {} alarm cleared".format(config[CONF_HOST])
