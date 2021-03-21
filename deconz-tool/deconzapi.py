@@ -544,6 +544,10 @@ class DeCONZAPI:
                             ientry[DECONZ_ATTR_LASTUPDATED] = value
                         continue
 
+                    # There could be a battery in ZHABattery
+                    if name == DECONZ_ATTR_BATTERY:
+                        ientry[DECONZ_ATTR_BATTERY] = value
+
                     # Convert possible value units in readable format
                     if name in DECONZ_SENSOR_UNITS:
 
