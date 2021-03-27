@@ -66,6 +66,7 @@ CONF_DATAFILE = "datafile"
 CONF_DISABLE_NOTIFICATION = "disable_notification"
 CONF_DNS = "dns"
 CONF_ENABLED = "enabled"
+CONF_HEADERS = "headers"
 CONF_HOST = "host"
 CONF_HOSTS = "hosts"
 CONF_IGNORE = "ignore"
@@ -79,6 +80,7 @@ CONF_RESPONSE = "response"
 CONF_REQUEST = "request"
 CONF_TELEGRAM = "telegram"
 CONF_TIMEOUT = "timeout"
+CONF_TIMEOUT_BATTERY = "timeout_battery"
 CONF_TOKEN = "token"
 CONF_TYPE = "type"
 
@@ -145,6 +147,7 @@ HTTP_SCHEMA = BASE_SCHEMA.extend(
         vol.Optional(CONF_TIMEOUT, default=5): int,
         vol.Optional(CONF_PROXY, default=""): str,
         vol.Optional(CONF_RESPONSE, default=False): bool,
+        vol.Optional(CONF_HEADERS, default={}): dict,
     },
     extra=vol.ALLOW_EXTRA,
 )
@@ -158,7 +161,8 @@ DECONZ_SCHEMA = BASE_SCHEMA.extend(
         vol.Required(CONF_HOST): str,
         vol.Optional(CONF_PORT, default=3080): int,
         vol.Required(CONF_APIKEY): str,
-        vol.Optional(CONF_TIMEOUT, default=360): int,
+        vol.Optional(CONF_TIMEOUT, default=15): int,
+        vol.Optional(CONF_TIMEOUT_BATTERY, default=360): int,
         vol.Optional(CONF_IGNORE, default=[]): list,
     },
     extra=vol.ALLOW_EXTRA,
@@ -292,7 +296,7 @@ class HealthCheck:
         if alarm == ATTR_CLEAR:
             if data[ATTR_COUNT] >= self._config[CONF_ALARMCOUNT]:
                 LOGGER.debug("Adding clear msg to the queue '%s'", msg)
-                self._msg.append({ATTR_MSG: entry + msg})
+                self._msg.append({ATTR_MSG: entry + " " + msg})
                 # Record the time when this happened
                 data[ATTR_CLEAR] = datetime.datetime.now()
 
@@ -727,6 +731,9 @@ class HealthCheck:
         if config[CONF_PROXY]:
             proxies = {"http": config[CONF_PROXY], "https": config[CONF_PROXY]}
 
+        # Possible add custom headers
+        headers = config[CONF_HEADERS]
+
         try:
             LOGGER.debug(
                 "%s: Checking URL (%s) %s (Proxy: %s)",
@@ -741,6 +748,7 @@ class HealthCheck:
                 config[CONF_HOST],
                 timeout=config[CONF_TIMEOUT],
                 proxies=proxies,
+                headers=headers,
             )
 
         # requests.exceptions.InvalidURL
@@ -834,7 +842,7 @@ class HealthCheck:
 
         # Handle API issue
         if devices is None:
-            LOGGER.error("%d: Returned None?", ATTR_DECONZ)
+            LOGGER.error("%s: Returned None?", ATTR_DECONZ)
             return
 
         if len(devices) == 0:
@@ -889,7 +897,19 @@ class HealthCheck:
             lastupdated = datetime.datetime.strptime(lastupdated, "%Y-%m-%dT%H:%M:%S")
             delta = round(((datetime.datetime.utcnow() - lastupdated).seconds) / 60, 2)
 
-            if delta > config[CONF_TIMEOUT]:
+            # Maybe we need to use the DECONZ_ATTR_REACHABLE for none-battery devices?
+
+            # Check if this is a battery device
+            battery = False
+            if (
+                deconzapi.DECONZ_ATTR_BATTERY in dev
+                and dev[deconzapi.DECONZ_ATTR_BATTERY]
+            ):
+                battery = True
+
+            timeout = config[CONF_TIMEOUT_BATTERY] if battery else config[CONF_TIMEOUT]
+
+            if delta > timeout:
                 LOGGER.error(
                     "%s: Device %s (%s:%s) last update is %d minute(s) ago (reachable=%s)",
                     ATTR_DECONZ,
