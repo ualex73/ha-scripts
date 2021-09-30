@@ -1,0 +1,82 @@
+# List of apps/db/other
+
+config:
+  dir:
+    docker: /docker
+    local: /backup
+    remote: /backup
+#    temp: /tmp
+  transfer:
+    - host: 192.168.1.3
+      type: scp
+      port: 22
+      user: pi
+    - host: 192.168.1.5
+      type: scp
+      port: 22
+      user: pi
+      run_host: ["ha-vm"]
+  #app: False
+  #db: False
+  #expiry: False
+  telegram:
+    token: mytoken
+    chat_id: mychatid
+    disable_notification: True
+
+app:
+  - name: appdaemon
+    exclude:
+     - log
+     - conf/apps/old
+     - conf/apps/__pycache__
+     - conf/apps/example
+  - name: deconz
+  - name: nzbget
+    run_host: ["ha-pc"]
+  - name: unifi
+    run_host: ["ha-pc"]
+    stopdocker: true
+    expiry:
+      day: 7
+      year: 1
+
+db:
+  - name: dsmr
+    type: postgresql
+    dbuser: dsmrreader
+    container: db-dsmr
+  - name: hass
+    type: mysql
+    dbname: hass
+    container: db-hass
+  - name: influxdb
+    type: influxdb-backup
+    dbname: hass
+    container: influxdb
+  - name: influxdb-text
+    type: influxdb-export
+    dbname: hass
+    container: influxdb
+    sourcedir: influxdb # relative to /docker
+    weekday: [7]
+
+expiry_app:
+#  day: 14
+#  month: 2
+#  year: 1
+  weekday: [7]
+
+expiry_db:
+#  day: 5
+#  month: 2
+#  year: 1
+  weekday:
+   - 7
+
+# When to run docker image backup, normally on a Sunday
+image:
+  weekday: [7]
+  cleanup: true
+
+# End
