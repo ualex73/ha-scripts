@@ -1010,7 +1010,26 @@ def doRestoreType():
     # Now it depends on the type
     if args[CONF_TYPE] in [CONF_APP, CONF_OTHER]:
         with tarfile.open(f"{file_name}", mode="r:gz") as archive:
-            archive.extractall()
+            def is_within_directory(directory, target):
+                
+                abs_directory = os.path.abspath(directory)
+                abs_target = os.path.abspath(target)
+            
+                prefix = os.path.commonprefix([abs_directory, abs_target])
+                
+                return prefix == abs_directory
+            
+            def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+            
+                for member in tar.getmembers():
+                    member_path = os.path.join(path, member.name)
+                    if not is_within_directory(path, member_path):
+                        raise Exception("Attempted Path Traversal in Tar File")
+            
+                tar.extractall(path, members, numeric_owner=numeric_owner) 
+                
+            
+            safe_extract(archive)
     # TarFile.extractall(path=".", members=None, *, numeric_owner=False)
 
     elif args[CONF_TYPE] == CONF_DB:
