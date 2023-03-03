@@ -1,0 +1,25 @@
+# ################################################################################
+# Check TransIP DDNS and update it when needed
+# ################################################################################
+transip:
+  module: transip
+  class: TransIP
+  loglevel: debug
+  username: gebruikersnaam
+  domain: mijndomain.nl
+  #externalip: https://icanhazip.com/ 
+  privkey: /privkey.pem
+  dnsentry:
+    name: @
+    type: A
+
+# The privkey.pem should look like:
+# -----BEGIN PRIVATE KEY-----
+# MIIEvxIBAXANBgkqhkiG9w0BAQEFAASCBKcwggSjAgXAXoIBAQC1jfY74xatK9Xx
+# ...
+# GFGz38xo9xEECyxk65z6Wmw=
+# -----END PRIVATE KEY-----
+
+# ################################################################################
+# End
+# ################################################################################
