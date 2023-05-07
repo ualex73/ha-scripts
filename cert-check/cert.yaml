@@ -1,0 +1,42 @@
+config:
+
+  telegram:
+    enabled: False
+    token: token-field
+    chat_id: 1234567
+
+  # Email is only send once a week, with "weekday: [7]" on sunday
+  email:
+    user: email@gmail.com
+    password: password
+    host: smtp.gmail.com
+    port: 587
+    email: email@gmail.com
+    template: |
+      From: email@gmail.com
+      Subject: Certificate expiry %DATE%
+      To: email@gmail.com
+
+      The following list are the certificate files and URLs with their expiry information:
+
+      %TEXT%
+
+      <end>
+    weekday: [7]
+
+check:
+    https:
+      - name: traefik
+        host: traefik.domain.com
+      - name: pve
+        host: pve1.domain.com
+        port: 8006
+
+    file:
+      - name: domain.com
+        filename: /certs/domain.com/cert.pem
+      - name: vpn-ca
+        filename: /openvpn/pki/ca.crt
+      - name: vpn-client
+        filename: /openvpn/pki/issued/*.crt
+
